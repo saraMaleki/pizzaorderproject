@@ -6,4 +6,30 @@
   </div>
   <a class="btn btn-danger" href="{% url 'logoutadmin' %}">logout</a>
 </nav>
+<form method="post" action='/addpizza/'>
+	{% csrf_token %}
+	<div class="container" style="width: 530px;display: block; margin: auto">
+		<input type="text" name="name" placeholder="name" class="form-control" style="width: 200px;display: inline; margin: auto;">
+		<input type="text" name="price" placeholder="price" class="form-control" style="width: 200px; display: inline; margin: auto;">
+		<input type="submit" name="" value="Add" style="display: inline;" class="btn btn-success">
+		
+	</div>
+	
+</form>
+<div class="container" style="width: 50%; display: block; margin: auto; margin-top: 80px;">
+	<table style="width: 50%">
+		<tr>
+			<th> name </th>
+			<th> price </th>
+			<th> delete </th>
+		</tr>
+		{% for pizza in pizzas%}
+			<tr>
+				<td>{{ pizza.name }}</td>
+				<td>{{ pizza.price }}</td>
+				<td> <a href="{% url 'deletepizza' pizza.id %}" class="btn btn-danger">Delete</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+</div>
 {% endblock%}
