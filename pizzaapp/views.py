@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import PizzaModel, CustomerModel
+from .models import PizzaModel, CustomerModel, OrderModel
 # Create your views here.
 
 def adminloginview(request):
@@ -79,11 +79,62 @@ def userautenticate(request):
 		return redirect('userloginpage')
 
 def customerwelcomeview(request):
+	if not request.user.is_authenticated:
+		return redirect('userloginpage')
+
 	username = request.user.username
-	context = {'username':username}
+	context = {'username':username, 'pizzas':PizzaModel.objects.all()}
 	return render(request,'customerwelcome.html',context)
 
 def userlogout(request):
 	logout(request)
 	return redirect('userloginpage')
+
+
+def placeorder(request):
+	if not request.user.is_authenticated:
+		return redirect('userloginpage')
+
+	username = request.user.username
+	phoneno = CustomerModel.objects.filter(userid = request.user.id)[0].phoneno
+	address = request.POST['address']
+	ordereditems =""
+	for pizza in PizzaModel.objects.all():
+		pizzaid = pizza.id
+		print(pizzaid)
+		name = pizza.name
+		price = pizza.price
+		quantity = request.POST.get(str(pizzaid)," ")
+		print('qu '+ quantity)
+		if str(quantity) !="0" and str(quantity) != " ":
+			ordereditems = ordereditems + " " + name + " price: " + str(int(price)*int(quantity)) + " quantity: "+quantity
+		print(ordereditems)
+	OrderModel(username=username, phoneno=phoneno, address=address, ordereditems=ordereditems).save()
+	messages.add_message(request,messages.SUCCESS,"order successfully placed")
+	return redirect('customerpage')
+
+
+def userorders(request):
+	orders = OrderModel.objects.filter(username=request.user.username)
+	context={'orders':orders}
+	return render(request, 'userorders.html',context)
+
+def adminorders(request):
+	orders = OrderModel.objects.all()
+	context = { 'orders': orders }
+	return render(request, 'adminorders.html' ,context)
+
+def acceptorder(request, orderpk):
+
+	order =OrderModel.objects.filter(id=orderpk)[0]
+	order.status="accepted"
+	order.save()
+	return redirect(request.META['HTTP_REFERER'])
+
+def declineorder(request, orderpk):
+
+	order =OrderModel.objects.filter(id=orderpk)[0]
+	order.status="declied"
+	order.save()
+	return redirect(request.META['HTTP_REFERER'])
 
