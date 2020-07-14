@@ -4,7 +4,7 @@
 
 <div class="container" style="width: 400px;height: 250px; background-color: orange;margin-top: 300px;padding: 30px;">
 	<h1 style="color: white;text-align: center;">Login</h1>
-	<form method="post" action="/customer/authenticate/">
+	<form method="post" action="{% url 'customerauthenticate' %}">
 		{% csrf_token %}
 		<input type="text" name="username" placeholder="username" class="form-control" style="margin-bottom: 10px;">
 		<input type="password" name="password" placeholder="password" class="form-control" style="margin-bottom: 10px;">
