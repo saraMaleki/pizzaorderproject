@@ -134,7 +134,7 @@ def acceptorder(request, orderpk):
 def declineorder(request, orderpk):
 
 	order =OrderModel.objects.filter(id=orderpk)[0]
-	order.status="declied"
+	order.status="declined"
 	order.save()
 	return redirect(request.META['HTTP_REFERER'])
 
